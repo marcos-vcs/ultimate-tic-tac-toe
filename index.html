@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="pt">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ultimate Tic Tac Toe</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="./css/global.css">
+</head>
+
+<body class="flex flex-col items-center justify-center min-h-screen bg-gray-900">
+    <canvas class="particles" id="particles"></canvas>
+
+    <!-- Botões de Controle -->
+    <div class="absolute top-4 right-4 flex gap-2">
+        <button id="theme-toggle" class="p-2 rounded-full bg-gray-800 text-white hover:bg-gray-700 z-50">
+            <i class="fas fa-moon"></i>
+        </button>
+        <button id="settings-btn" class="p-2 rounded-full bg-gray-800 text-white hover:bg-gray-700 z-50">
+            <i class="fas fa-cog"></i>
+        </button>
+    </div>
+
+    <!-- Modal de Customização -->
+    <div id="customization-modal" class="hidden fixed inset-0 flex items-center justify-center modal-overlay">
+        <div class="modal-content bg-white p-8 rounded-2xl shadow-2xl text-center max-w-md">
+            <h2 class="text-2xl font-bold mb-4">Customizar Cores</h2>
+
+            <div class="flex flex-col gap-4 mb-6">
+                <div class="flex items-center justify-center gap-4">
+                    <label>Cor do X:</label>
+                    <input type="color" id="x-color" class="color-picker" value="#3b82f6">
+                </div>
+                <div class="flex items-center justify-center gap-4">
+                    <label>Cor do O:</label>
+                    <input type="color" id="o-color" class="color-picker" value="#ef4444">
+                </div>
+            </div>
+
+            <button onclick="closeCustomizationModal()"
+                class="px-6 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-all">
+                Fechar
+            </button>
+        </div>
+    </div>
+
+    <!-- Menu Principal -->
+    <div class="menu text-center" id="menu">
+        <h1 class="text-5xl md:text-6xl font-bold mb-8 title-animation">Ultimate Tic Tac Toe</h1>
+        <div class="space-y-4" id="main-menu">
+            <button
+                class="px-8 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-all transform hover:scale-105"
+                onclick="selectMode('ai')">
+                <i class="fas fa-robot mr-2"></i>Vs IA
+            </button>
+            <button
+                class="px-8 py-3 bg-purple-600 text-white rounded-xl hover:bg-purple-700 transition-all transform hover:scale-105"
+                onclick="selectMode('multiplayer')">
+                <i class="fas fa-users mr-2"></i>2 Jogadores
+            </button>
+        </div>
+        <div class="hidden space-y-4" id="ai-difficulty">
+            <button
+                class="px-8 py-3 bg-green-600 text-white rounded-xl hover:bg-green-700 transition-all transform hover:scale-105"
+                onclick="startGame('easy')">
+                <i class="fas fa-baby mr-2"></i>Fácil
+            </button>
+            <button
+                class="px-8 py-3 bg-yellow-600 text-white rounded-xl hover:bg-yellow-700 transition-all transform hover:scale-105"
+                onclick="startGame('medium')">
+                <i class="fas fa-user mr-2"></i>Médio
+            </button>
+            <button
+                class="px-8 py-3 bg-orange-600 text-white rounded-xl hover:bg-orange-700 transition-all transform hover:scale-105"
+                onclick="startGame('hard')">
+                <i class="fas fa-skull mr-2"></i>Difícil
+            </button>
+            <button
+                class="px-8 py-3 bg-red-600 text-white rounded-xl hover:bg-red-700 transition-all transform hover:scale-105"
+                onclick="startGame('extreme')">
+                <i class="fas fa-bolt mr-2"></i>Extremo
+            </button>
+            <button
+                class="px-8 py-3 bg-gray-600 text-white rounded-xl hover:bg-gray-700 transition-all transform hover:scale-105"
+                onclick="returnToMainMenu()">
+                <i class="fas fa-arrow-left mr-2"></i>Voltar
+            </button>
+        </div>
+    </div>
+
+    <!-- Jogo -->
+    <div class="hidden text-center" id="game">
+        <h1 class="text-4xl font-bold mb-4 title-animation">Ultimate Tic Tac Toe</h1>
+        <div id="game-container"
+            class="border-4 border-gray-700 p-4 rounded-xl shadow-xl inline-block transition-colors">
+            <div id="scoreboard" class="text-lg font-semibold mb-4 flex items-center justify-center gap-2">
+                <i class="fas fa-xmark"></i>: <span id="x-score">0</span>
+                <span class="mx-2">|</span>
+                <i class="far fa-circle"></i>: <span id="o-score">0</span>
+            </div>
+            <div class="grid grid-cols-3 gap-2 p-2 rounded-lg" id="board"></div>
+            <p id="status" class="text-xl font-semibold mt-4"></p>
+            <button class="mt-4 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all"
+                onclick="returnToMenu()">
+                <i class="fas fa-home mr-2"></i>Voltar ao Menu
+            </button>
+        </div>
+    </div>
+
+    <!-- Modal de Resultado -->
+    <div id="result-modal" class="hidden fixed inset-0 flex items-center justify-center modal-overlay">
+        <div class="modal-content bg-white p-8 rounded-2xl shadow-2xl text-center max-w-md">
+            <div id="result-icon" class="text-6xl mb-4"></div>
+            <h2 id="result-title" class="text-3xl font-bold mb-4"></h2>
+            <div class="text-xl mb-6 flex items-center justify-center gap-2">
+                Placar: <i class="fas fa-xmark"></i> <span id="modal-x-score">0</span> -
+                <i class="far fa-circle"></i> <span id="modal-o-score">0</span>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <button onclick="setupBoard()"
+                    class="px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-all">
+                    <i class="fas fa-redo mr-2"></i>Jogar Novamente
+                </button>
+                <button onclick="returnToMenu()"
+                    class="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-all">
+                    <i class="fas fa-home mr-2"></i>Voltar ao Menu
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="./js/principal.js"></script>
+</body>
+
+</html>
